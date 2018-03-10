@@ -36,10 +36,10 @@ session = Session(engine)
 # for col in otu.__table__.columns: 
 # 	print ("col: " + col.description)
 # print("========================================================")
-def samplesi():
-	print("samples column names:")
-	for col in samples.__table__.columns: 
-		print ("col: " + col.description)
+# def samplesi():
+# 	print("samples column names:")
+# 	for col in samples.__table__.columns: 
+# 		print ("col: " + col.description)
 # print("========================================================")
 # print("samples_metadata column names:")
 # for col in samples_metadata.__table__.columns: 
@@ -48,24 +48,34 @@ def samplesi():
 
 ###Flask
 
-app = Flask(__name__)
+import json
+def example():
+    res = engine.execute("SELECT * FROM samples")
 
-@app.route("/")
+    # return all rows as a JSON array of objects
+    return json.dumps([dict(r) for r in res])
+
+# app = Flask(__name__)
+
+# @app.route("/")
 def homepage():
 	print("Server received request for homepage...")
 	return("test")
 
 
-@app.route("/names")
+# @app.route("/names")
 def names():
     results = session.query(samples).statement
     results_list=list(np.ravel(results))
-    return jsonify(results_list)
+    return (jsonify(results_list))
+
+
+print(example())
  
 # @app.route('/otu')
 # @app.route('/metadata/<sample>')
 # @app.route('/wfreq/<sample>')
 # @app.route('/samples/<sample>')
 
-if __name__ == "__main__":
-	app.run(debug=True)
+# if __name__ == "__main__":
+# 	app.run(debug=True)
