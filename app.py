@@ -56,12 +56,14 @@ def homepage():
 	print("Server received request for homepage...")
 	return("test")
 
+#revise: pandas ---> jsonify
 @app.route("/names")
 def example():
     results = engine.execute("SELECT * FROM samples")
     # return all rows as a JSON array of objects using list comprehension
     return json.dumps([dict(r) for r in results],separators=(',', ': '),indent=4,check_circular=True)
 
+#revise: pandas ----> jsonify only keys part of response
 @app.route('/otu')
 def otu():
 	results = engine.execute("SELECT lowest_taxonomic_unit_found FROM otu")
