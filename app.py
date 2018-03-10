@@ -9,6 +9,7 @@ from flask import Flask, jsonify, render_template
 import numpy as np
 import pandas as pd
 import datetime as dt
+import json
 
 ###Sqlite data import
 
@@ -48,34 +49,22 @@ session = Session(engine)
 
 ###Flask
 
-import json
-def example():
-    res = engine.execute("SELECT * FROM samples")
+app = Flask(__name__)
 
-    # return all rows as a JSON array of objects
-    return json.dumps([dict(r) for r in res])
-
-# app = Flask(__name__)
-
-# @app.route("/")
+@app.route("/")
 def homepage():
 	print("Server received request for homepage...")
 	return("test")
 
-
-# @app.route("/names")
-def names():
-    results = session.query(samples).statement
-    results_list=list(np.ravel(results))
-    return (jsonify(results_list))
-
-
-print(example())
- 
+@app.route("/names")
+def example():
+    results = engine.execute("SELECT * FROM samples")
+    # return all rows as a JSON array of objects using list comprehension
+    return json.dumps([dict(r) for r in results],separators=(',', ': '),indent=4,check_circular=True)
 # @app.route('/otu')
 # @app.route('/metadata/<sample>')
-# @app.route('/wfreq/<sample>')
+# @app.route('/wfreq/<sajmple>')
 # @app.route('/samples/<sample>')
 
-# if __name__ == "__main__":
-# 	app.run(debug=True)
+if __name__ == "__main__":
+	app.run(debug=True)
