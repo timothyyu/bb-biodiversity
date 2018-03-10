@@ -59,9 +59,9 @@ def homepage():
 #revise: pandas ---> jsonify
 @app.route("/names")
 def example():
-    results = engine.execute("SELECT * FROM samples")
-    # return all rows as a JSON array of objects using list comprehension
-    return json.dumps([dict(r) for r in results],separators=(',', ': '),indent=4,check_circular=True)
+	results = session.query(samples).all()
+	results_untuple = list(np.ravel(results))
+	return jsonify(results_untuple)
 
 #revise: pandas ----> jsonify only keys part of response
 @app.route('/otu')
