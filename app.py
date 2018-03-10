@@ -61,7 +61,13 @@ def example():
     results = engine.execute("SELECT * FROM samples")
     # return all rows as a JSON array of objects using list comprehension
     return json.dumps([dict(r) for r in results],separators=(',', ': '),indent=4,check_circular=True)
-# @app.route('/otu')
+
+@app.route('/otu')
+def otu():
+	results = engine.execute("SELECT lowest_taxonomic_unit_found FROM otu")
+	# return all rows as a JSON array of objects using list comprehension
+	return json.dumps([dict(r) for r in results],separators=(',', ': '), skipkeys = True, indent=2,check_circular=True)
+
 # @app.route('/metadata/<sample>')
 # @app.route('/wfreq/<sajmple>')
 # @app.route('/samples/<sample>')
