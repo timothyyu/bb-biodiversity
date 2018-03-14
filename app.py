@@ -55,13 +55,18 @@ app = Flask(__name__)
 def homepage():
 	print("Server received request for homepage...")
 	return("test")
+	#return render_template("index.html")
 
 #revise: pandas ---> jsonify
 @app.route("/names")
 def example():
-	results = session.query(samples).all()
-	results_untuple = list(np.ravel(results))
-	return jsonify(results_untuple)
+	results = session.query(samples).statement
+	results_df = pd.read_sql_query(sql =results, con= session.bind, index_col= 'otu_id')
+	results_df_list = list(results_df)
+	return(jsonify(results_df_list))
+
+	#results_untuple = list(np.ravel(results))
+	#return jsonify(results_untuple)
 
 #revise: pandas ----> jsonify only keys part of response
 @app.route('/otu')
