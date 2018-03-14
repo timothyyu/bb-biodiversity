@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, inspect
 from sqlalchemy import func
 
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, request,url_for
 import numpy as np
 import pandas as pd
 import datetime as dt
@@ -50,7 +50,22 @@ def otu():
 	results_df_list = list(np.ravel(results))
 	return jsonify(results_df_list)
 
-# @app.route('/metadata/<sample>')
+@app.route('/metadata/<sample>')
+def metadata(sample):
+	#if request.method == 'POST':
+	results = session.query(samples_metadata.AGE, samples_metadata.BBTYPE, samples_metadata.ETHNICITY, 
+	samples_metadata.GENDER, samples_metadata.LOCATION, samples_metadata.SAMPLEID).filter(samples_metadata.SAMPLEID == sample).all()
+	metadata_dict_response={}
+	print (results)
+	for result in results: 
+		metadata_dict_response["AGE"] = result[0]
+		metadata_dict_response["BBTYPE"] = result[1]
+		metadata_dict_response["ETHNICITY"] = result[2]
+		metadata_dict_response["GENDER"] = result[3]
+		metadata_dict_response["LOCATION"] =  result[4]
+		metadata_dict_response["SAMPLEID"] = result[5]
+	print(metadata_dict_response)
+	return "" #jsonify(metadata_dict_response)
 # @app.route('/wfreq/<sajmple>')
 # @app.route('/samples/<sample>')
 
