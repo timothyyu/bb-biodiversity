@@ -1,4 +1,5 @@
 ###Imports
+
 import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
@@ -20,12 +21,43 @@ Base = automap_base()
 Base.prepare(engine, reflect=True)
 Base.classes.keys()
 
-#table references (r)
+#table references
 otu_s = Base.classes.otu
 samples= Base.classes.samples
 samples_metadata = Base.classes.samples_metadata
 #session link for python to database:
 session = Session(engine)
+
+###Flask
+
+app = Flask(__name__)
+
+@app.route("/")
+def homepage():
+	print("Server received request for homepage...")
+	return render_template("index.html")
+
+@app.route("/names")
+def example():
+	results = session.query(samples).statement
+	results_df = pd.read_sql_query(sql =results, con= session.bind, index_col= 'otu_id')
+	results_df_list = list(results_df)
+	return jsonify(results_df_list)
+
+@app.route('/otu')
+def otu():
+	results = session.query(otu_s.lowest_taxonomic_unit_found).all()
+	results_df_list = list(np.ravel(results))
+	return jsonify(results_df_list)
+
+# @app.route('/metadata/<sample>')
+# @app.route('/wfreq/<sajmple>')
+# @app.route('/samples/<sample>')
+
+if __name__ == "__main__":
+	app.run(debug=True)
+
+
 
 #Import debugging
 # print("========================================================")
@@ -46,45 +78,3 @@ session = Session(engine)
 # for col in samples_metadata.__table__.columns: 
 # 	print ("col: " + col.description)
 # print("========================================================")
-
-###Flask
-
-app = Flask(__name__)
-
-@app.route("/")
-def homepage():
-	print("Server received request for homepage...")
-	return("test")
-	#return render_template("index.html")
-
-#revise: pandas ---> jsonify
-@app.route("/names")
-def example():
-	results = session.query(samples).statement
-	results_df = pd.read_sql_query(sql =results, con= session.bind, index_col= 'otu_id')
-	results_df_list = list(results_df)
-	return jsonify(results_df_list)
-
-	#results_untuple = list(np.ravel(results))
-	#return jsonify(results_untuple)
-
-
-#revise: pandas ----> jsonify only keys part of response
-@app.route('/otu')
-def otu():
-	results = session.query(otu_s.lowest_taxonomic_unit_found).all()
-	#results_df = pd.read_sql_query(sql =results, con= session.bind, index_col= 'otu_id')
-	results_df_list = list(np.ravel(results))
-	return jsonify(results_df_list)
-	#results = engine.execute("SELECT lowest_taxonomic_unit_found FROM otu")
-	# return all rows as a JSON array of objects using list comprehension
-	#return json.dumps([dict(r) for r in results],separators=(',', ': '), skipkeys = True, indent=2,check_circular=True)
-
-#9th actvitiy 14.2
-
-# @app.route('/metadata/<sample>')
-# @app.route('/wfreq/<sajmple>')
-# @app.route('/samples/<sample>')
-
-if __name__ == "__main__":
-	app.run(debug=True)
