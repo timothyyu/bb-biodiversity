@@ -54,9 +54,12 @@ def otu():
 def metadata(sample):
 	#if request.method == 'POST':
 	results = session.query(samples_metadata.AGE, samples_metadata.BBTYPE, samples_metadata.ETHNICITY, 
-	samples_metadata.GENDER, samples_metadata.LOCATION, samples_metadata.SAMPLEID).filter(samples_metadata.SAMPLEID == sample).all()
+	samples_metadata.GENDER, samples_metadata.LOCATION, samples_metadata.SAMPLEID).filter(samples_metadata.SAMPLEID == sample[3:]).all()
 	metadata_dict_response={}
-	print (results)
+	
+	#samples_metadata.SAMPLEID == sample[3:]
+
+
 	for result in results: 
 		metadata_dict_response["AGE"] = result[0]
 		metadata_dict_response["BBTYPE"] = result[1]
@@ -64,8 +67,8 @@ def metadata(sample):
 		metadata_dict_response["GENDER"] = result[3]
 		metadata_dict_response["LOCATION"] =  result[4]
 		metadata_dict_response["SAMPLEID"] = result[5]
-	print(metadata_dict_response)
-	return "" #jsonify(metadata_dict_response)
+	#print(metadata_dict_response)
+	return jsonify(metadata_dict_response)
 # @app.route('/wfreq/<sajmple>')
 # @app.route('/samples/<sample>')
 
